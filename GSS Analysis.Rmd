@@ -1,0 +1,193 @@
+---
+title: "**Analysis of GSS Categorical Data**"
+author: "**Aryan Singh**"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(forcats)
+```
+Marital Status Analysis
+
+Data Processing
+
+Filter and clean marital status data to focus on three main categories:
+
+```{r}
+gss_cat %>% count(marital)
+```
+
+
+```{r}
+marital_data <- gss_cat %>%
+  select(marital) %>%
+  filter(marital %in% c("Married", "Never Married", "Divorced")) %>%
+  mutate(marital = fct_drop(marital))   # Remove unused factor levels
+marital_table <- table(marital_data$marital)
+
+```
+Chi-Squared Goodness of Fit Test
+
+```{r}
+chisq.test(marital_table)
+```
+
+Visualization
+
+```{r}
+marital_data %>%
+  ggplot(aes(x = marital)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Distribution of Marital Status",
+       x = "Marital Status",
+       y = "Count") +
+  theme_minimal()
+```
+
+Race Analysis
+
+Data Processing
+
+```{r}
+race_tab <- gss_cat %>%
+  select(race) %>%
+  filter(race %in% c("White", "Black", "Other")) %>%
+  mutate(race = fct_drop(race))
+
+tab1 <- table(race_tab)  
+```
+
+Chi-Squared Test
+
+```{r}
+chisq.test(tab1)
+```
+
+Visualization
+
+```{r}
+ggplot(race_tab, aes(x = race)) +
+  geom_bar(fill = "darkgreen") +
+  labs(title = "Distribution of Race",
+       x = "Race",
+       y = "Count") +
+  theme_minimal()
+```
+
+Party Identification Analysis
+
+Data Processing
+
+```{r}
+party_tab <- gss_cat %>%
+  select(partyid) %>%
+  filter(partyid %in% c("Other party", "Strong republican", 
+                       "Not str republican", "Ind,near rep",
+                       "Independent", "Ind,near dem",
+                       "Not str democrat", "Strong democrat")) %>%
+  mutate(partyid = fct_drop(partyid))
+
+tab2 <- table(party_tab)  
+```
+
+Chi-Squared Test
+
+```{r}
+chisq.test(tab2)
+```
+
+Visualization
+
+```{r}
+ggplot(party_tab, aes(x = partyid)) +
+  geom_bar(fill = "red") +
+  labs(title = "Distribution of Party Identification",
+       x = "Party ID",
+       y = "Count") +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Religion Analysis
+
+Data Processing
+
+```{r}
+religion_tab <- gss_cat %>%
+  select(relig) %>%
+  filter(relig %in% c("Inter-nondenominational", "Native american",
+                     "Christian", "Orthodox-christian", "Moslem/islam",
+                     "Other eastern", "Hinduism", "Buddhism", "Other",
+                     "None", "Jewish", "Catholic", "Protestant")) %>%
+  mutate(relig = fct_drop(relig))
+
+tab3 <- table(religion_tab)  
+```
+
+Chi-Squared Test
+
+```{r}
+chisq.test(tab3)
+```
+
+Visualization
+
+```{r}
+ggplot(religion_tab, aes(x = relig)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Distribution of Religious Affiliation",
+       x = "Religion",
+       y = "Count") +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Denomination Analysis
+
+Data Processing
+
+```{r}
+denomination_tab <- gss_cat %>%
+  select(denom) %>%
+  filter(denom %in% c("No denomination", "Other", "Episcopal", 
+                     "Presbyterian-dk wh", "Presbyterian, merged", 
+                     "Other presbyterian", "United pres ch in us", 
+                     "Presbyterian c in us")) %>%
+  mutate(denom = fct_drop(denom))
+
+tab4 <- table(denomination_tab)  
+```
+
+Chi-Squared Test
+
+```{r}
+chisq.test(tab4)
+```
+
+Visualization
+
+```{r}
+ggplot(denomination_tab, aes(x = denom)) +
+  geom_bar(fill = "purple") +
+  labs(title = "Distribution of Denominations",
+       x = "Denomination",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Conclusion
+
+# Conclusion
+
+All five categorical variables show highly non-uniform distributions.
+
+- **Marital Status (df = 2):** χ² = 3359, p < .001 → Highly imbalanced categories
+- **Race (df = 2):** χ² = 17956, p < .001 → Racial composition is dominated by one group
+- **Party ID (df = 7):** χ² = 3772, p < .001 → Political affiliations are varied
+- **Religion (df = 12):** χ² = 74133, p < .001 → Religious affiliation is extremely diverse
+- **Denomination (df = 7):** χ² = 9469, p < .001 → Large differences in denominational identities
+
+
